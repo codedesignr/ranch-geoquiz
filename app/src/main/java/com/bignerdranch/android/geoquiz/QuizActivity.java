@@ -55,6 +55,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mAnswerCount++;
                 checkAnswer(true);
+                mQuestionBank[mCurrentIndex].setIsAnswered(true);
                 incrementQuestion();
             }
         });
@@ -65,6 +66,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 mAnswerCount++;
                 checkAnswer(false);
+                mQuestionBank[mCurrentIndex].setIsAnswered(true);
                 incrementQuestion();
             }
         });
@@ -136,6 +138,11 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
+        if(mQuestionBank[mCurrentIndex].getIsAnswered()) {
+            disableAnswerButtons();
+        } else {
+            enableAnswerButtons();
+        }
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
         if (mTotalQuestions == mAnswerCount) {
@@ -170,6 +177,16 @@ public class QuizActivity extends AppCompatActivity {
         resetQuiz();
     }
 
+    private void disableAnswerButtons() {
+        mTrueButton.setEnabled(false);
+        mFalseButton.setEnabled(false);
+    }
+
+    private void enableAnswerButtons() {
+        mTrueButton.setEnabled(true);
+        mFalseButton.setEnabled(true);
+    }
+
     //reset quiz values
     private void resetQuiz() {
         mCurrentIndex = 0;
@@ -177,6 +194,11 @@ public class QuizActivity extends AppCompatActivity {
         mUserScore = 0;
         mFinalScore = 0;
         updateQuestion();
+
+        //reset true false buttons
+        for(int i = 0; i < mQuestionBank.length; i++) {
+            mQuestionBank[i].setIsAnswered(false);
+        }
     }
 
 
