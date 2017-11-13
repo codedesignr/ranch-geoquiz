@@ -164,20 +164,19 @@ public class QuizActivity extends AppCompatActivity {
         Log.d("TAG", "Total Questions:" + mTotalQuestions);
         Log.d("TAG", "mUserScore: " + mUserScore);
         Log.d("TAG", "AnswerCount " + mAnswerCount);
+        String scoreToastText = getString(R.string.score_toast);
+        Toast.makeText(this, scoreToastText + " " + mFinalScore + "%", Toast.LENGTH_LONG).show();
 
-        //run if all questions are answered
-        if (mTotalQuestions == mAnswerCount) {
-            Toast.makeText(this, "Your final score is:" + mFinalScore + "%", Toast.LENGTH_LONG).show();
-            resetQuiz();
-        }
+        resetQuiz();
     }
 
-    //display score and reset quiz
+    //reset quiz values
     private void resetQuiz() {
         mCurrentIndex = 0;
         mAnswerCount = 0;
         mUserScore = 0;
         mFinalScore = 0;
+        updateQuestion();
     }
 
 
