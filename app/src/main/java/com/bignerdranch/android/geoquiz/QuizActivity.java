@@ -30,6 +30,10 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private int mCurrentIndex = 0;
+    private int mTotalQuestions = mQuestionBank.length;
+    private int mAnswerCount = 0;
+    private int mUserScore = 0;
+    private int mFinalScore = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +43,8 @@ public class QuizActivity extends AppCompatActivity {
 
         if(savedInstanceState != null) {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
+            mAnswerCount = savedInstanceState.getInt("AnswerCount", 0);
+            mUserScore = savedInstanceState.getInt("UserScore", 0);
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
@@ -47,6 +53,7 @@ public class QuizActivity extends AppCompatActivity {
         mTrueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mAnswerCount++;
                 checkAnswer(true);
                 incrementQuestion();
             }
@@ -56,6 +63,7 @@ public class QuizActivity extends AppCompatActivity {
         mFalseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mAnswerCount++;
                 checkAnswer(false);
                 incrementQuestion();
             }
@@ -100,6 +108,8 @@ public class QuizActivity extends AppCompatActivity {
         super.onSaveInstanceState(savedInstanceState);
         Log.i(TAG, "onSaveInstanceState");
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
+        savedInstanceState.putInt("AnswerCount", mAnswerCount);
+        savedInstanceState.putInt("UserScore", mUserScore);
     }
 
     @Override
@@ -128,6 +138,10 @@ public class QuizActivity extends AppCompatActivity {
     private void updateQuestion() {
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+        if (mTotalQuestions == mAnswerCount) {
+            calculateScore();
+            resetQuiz();
+        }
     }
 
     private void checkAnswer(boolean userPressedTrue) {
@@ -137,11 +151,33 @@ public class QuizActivity extends AppCompatActivity {
 
         if (userPressedTrue == answerIsTrue) {
             messageResId = R.string.correct_toast;
+            mUserScore++;
         } else {
             messageResId = R.string.incorrect_toast;
         }
 
         Toast.makeText(this,messageResId, Toast.LENGTH_SHORT).show();
+    }
+
+    private void calculateScore() {
+        mFinalScore = Math.round(100 - ((float) (mTotalQuestions - mUserScore) / mTotalQuestions) * 100);
+        Log.d("TAG", "Total Questions:" + mTotalQuestions);
+        Log.d("TAG", "mUserScore: " + mUserScore);
+        Log.d("TAG", "AnswerCount " + mAnswerCount);
+
+        //run if all questions are answered
+        if (mTotalQuestions == mAnswerCount) {
+            Toast.makeText(this, "Your final score is:" + mFinalScore + "%", Toast.LENGTH_LONG).show();
+            resetQuiz();
+        }
+    }
+
+    //display score and reset quiz
+    private void resetQuiz() {
+        mCurrentIndex = 0;
+        mAnswerCount = 0;
+        mUserScore = 0;
+        mFinalScore = 0;
     }
 
 
