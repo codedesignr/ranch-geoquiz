@@ -38,6 +38,7 @@ public class QuizActivity extends AppCompatActivity {
     private int mAnswerCount = 0;
     private int mUserScore = 0;
     private int mFinalScore = 0;
+    private int mCheatCount = 3;
     private boolean mIsCheater;
 
     @Override
@@ -123,6 +124,7 @@ public class QuizActivity extends AppCompatActivity {
             mIsCheater = CheatActivity.wasAnswerShown(data);
             if(mIsCheater == true) {
                 mQuestionBank[mCurrentIndex].setIsCheated(true);
+                mCheatCount--;
             }
         }
     }
@@ -178,6 +180,11 @@ public class QuizActivity extends AppCompatActivity {
         } else {
             enableAnswerButtons();
         }
+        if(mCheatCount > 0) {
+            cheatButtonStatus(true);
+        } else {
+            cheatButtonStatus(false);
+        }
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
         if (mTotalQuestions == mAnswerCount) {
@@ -221,13 +228,17 @@ public class QuizActivity extends AppCompatActivity {
     private void disableAnswerButtons() {
         mTrueButton.setEnabled(false);
         mFalseButton.setEnabled(false);
-        mCheatButton.setEnabled(false);
+        cheatButtonStatus(false);
     }
 
     private void enableAnswerButtons() {
         mTrueButton.setEnabled(true);
         mFalseButton.setEnabled(true);
-        mCheatButton.setEnabled(true);
+        cheatButtonStatus(true);
+    }
+
+    private void cheatButtonStatus(boolean status) {
+        mCheatButton.setEnabled(status);
     }
 
     //reset quiz values
@@ -236,6 +247,7 @@ public class QuizActivity extends AppCompatActivity {
         mAnswerCount = 0;
         mUserScore = 0;
         mFinalScore = 0;
+        mCheatCount = 3;
         mIsCheater = false;
         updateQuestion();
 

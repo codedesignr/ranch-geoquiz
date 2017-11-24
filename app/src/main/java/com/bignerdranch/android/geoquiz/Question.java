@@ -9,11 +9,13 @@ public class Question {
     private int mTextResId;
     private boolean mAnswerTrue;
     private boolean mIsAnswered;
+    private boolean mIsCheated;
 
     public Question(int textResId, boolean answerTrue) {
         mTextResId = textResId;
         mAnswerTrue = answerTrue;
         mIsAnswered = false;
+        mIsCheated = false;
     }
 
     public int getTextResId() {
@@ -35,4 +37,8 @@ public class Question {
     public boolean getIsAnswered() { return mIsAnswered; }
 
     public void setIsAnswered(boolean isAnswered) { mIsAnswered = isAnswered; }
+
+    public boolean getIsCheated() { return mIsCheated; }
+
+    public void setIsCheated(boolean isCheated) { mIsCheated = isCheated; }
 }
