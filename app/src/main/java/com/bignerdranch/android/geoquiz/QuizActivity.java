@@ -121,6 +121,9 @@ public class QuizActivity extends AppCompatActivity {
                 return;
             }
             mIsCheater = CheatActivity.wasAnswerShown(data);
+            if(mIsCheater == true) {
+                mQuestionBank[mCurrentIndex].setIsCheated(true);
+            }
         }
     }
 
@@ -185,10 +188,12 @@ public class QuizActivity extends AppCompatActivity {
 
     private void checkAnswer(boolean userPressedTrue) {
         boolean answerIsTrue = mQuestionBank[mCurrentIndex].getAnswerTrue();
+        boolean answerCheated = mQuestionBank[mCurrentIndex].getIsCheated();
 
         int messageResId = 0;
 
-        if (mIsCheater) {
+        //chech if user has cheated before allowing answer
+        if (mIsCheater  || answerCheated ) {
             messageResId = R.string.judgement_toast;
         } else {
             if (userPressedTrue == answerIsTrue) {
@@ -216,11 +221,13 @@ public class QuizActivity extends AppCompatActivity {
     private void disableAnswerButtons() {
         mTrueButton.setEnabled(false);
         mFalseButton.setEnabled(false);
+        mCheatButton.setEnabled(false);
     }
 
     private void enableAnswerButtons() {
         mTrueButton.setEnabled(true);
         mFalseButton.setEnabled(true);
+        mCheatButton.setEnabled(true);
     }
 
     //reset quiz values
@@ -232,9 +239,10 @@ public class QuizActivity extends AppCompatActivity {
         mIsCheater = false;
         updateQuestion();
 
-        //reset true false buttons
+        //reset true false buttons and cheated status
         for(Question question:mQuestionBank) {
             question.setIsAnswered(false);
+            question.setIsCheated(false);
         }
     }
 
