@@ -23,6 +23,7 @@ public class QuizActivity extends AppCompatActivity {
     private ImageButton mPrevButton;
     private ImageButton mNextButton;
     private TextView mQuestionTextView;
+    private TextView mCheatsRemainingTextView;
 
     private Question[] mQuestionBank = new Question[] {
             new Question(R.string.question_australia, true),
@@ -51,10 +52,12 @@ public class QuizActivity extends AppCompatActivity {
             mCurrentIndex = savedInstanceState.getInt(KEY_INDEX, 0);
             mAnswerCount = savedInstanceState.getInt("AnswerCount", 0);
             mUserScore = savedInstanceState.getInt("UserScore", 0);
+            mCheatCount = savedInstanceState.getInt("CheatCount", 3);
             mIsCheater = savedInstanceState.getBoolean("IsCheater", false);
         }
 
         mQuestionTextView = (TextView) findViewById(R.id.question_text_view);
+        mCheatsRemainingTextView = (TextView) findViewById(R.id.cheats_remaining_text_view);
 
         mTrueButton = (Button) findViewById(R.id.true_button);
         mTrueButton.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +129,7 @@ public class QuizActivity extends AppCompatActivity {
                 cheatButtonActive(false);
                 mQuestionBank[mCurrentIndex].setIsCheated(true);
                 mCheatCount--;
+                updateCheatText();
             }
         }
     }
@@ -149,6 +153,7 @@ public class QuizActivity extends AppCompatActivity {
         savedInstanceState.putInt(KEY_INDEX, mCurrentIndex);
         savedInstanceState.putInt("AnswerCount", mAnswerCount);
         savedInstanceState.putInt("UserScore", mUserScore);
+        savedInstanceState.putInt("CheatCount", mCheatCount);
         savedInstanceState.putBoolean("IsCheater", mIsCheater);
     }
 
@@ -176,18 +181,20 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void updateQuestion() {
+        mIsCheater = false;
         if(mQuestionBank[mCurrentIndex].getIsAnswered()) {
-            answerButtonStatus(false);
+            answerButtonActive(false);
+            cheatButtonActive(false);
         } else {
-            answerButtonStatus(true);
+            answerButtonActive(true);
+            cheatButtonActive(true);
         }
         if(mCheatCount == 0 || mQuestionBank[mCurrentIndex].getIsCheated()) {
             cheatButtonActive(false);
-        } else {
-            cheatButtonActive(true);
         }
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
+        updateCheatText();
         if (mTotalQuestions == mAnswerCount) {
             calculateScore();
             resetQuiz();
@@ -200,7 +207,7 @@ public class QuizActivity extends AppCompatActivity {
 
         int messageResId = 0;
 
-        //chech if user has cheated before allowing answer
+        //check if user has cheated before allowing answer
         if (mIsCheater  || answerCheated ) {
             messageResId = R.string.judgement_toast;
         } else {
@@ -226,7 +233,7 @@ public class QuizActivity extends AppCompatActivity {
         resetQuiz();
     }
 
-    private void answerButtonStatus(boolean status) {
+    private void answerButtonActive(boolean status) {
         mTrueButton.setEnabled(status);
         mFalseButton.setEnabled(status);
         cheatButtonActive(status);
@@ -234,6 +241,10 @@ public class QuizActivity extends AppCompatActivity {
 
     private void cheatButtonActive(boolean status) {
         mCheatButton.setEnabled(status);
+    }
+
+    private void updateCheatText() {
+        mCheatsRemainingTextView.setText(getString(R.string.cheats_remaining_text) + " "+ String.valueOf(mCheatCount));
     }
 
     //reset quiz values
