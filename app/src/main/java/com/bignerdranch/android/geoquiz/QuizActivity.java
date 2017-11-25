@@ -123,6 +123,7 @@ public class QuizActivity extends AppCompatActivity {
             }
             mIsCheater = CheatActivity.wasAnswerShown(data);
             if(mIsCheater == true) {
+                cheatButtonActive(false);
                 mQuestionBank[mCurrentIndex].setIsCheated(true);
                 mCheatCount--;
             }
@@ -176,14 +177,14 @@ public class QuizActivity extends AppCompatActivity {
 
     private void updateQuestion() {
         if(mQuestionBank[mCurrentIndex].getIsAnswered()) {
-            disableAnswerButtons();
+            answerButtonStatus(false);
         } else {
-            enableAnswerButtons();
+            answerButtonStatus(true);
         }
-        if(mCheatCount > 0) {
-            cheatButtonStatus(true);
+        if(mCheatCount == 0 || mQuestionBank[mCurrentIndex].getIsCheated()) {
+            cheatButtonActive(false);
         } else {
-            cheatButtonStatus(false);
+            cheatButtonActive(true);
         }
         int question = mQuestionBank[mCurrentIndex].getTextResId();
         mQuestionTextView.setText(question);
@@ -225,19 +226,13 @@ public class QuizActivity extends AppCompatActivity {
         resetQuiz();
     }
 
-    private void disableAnswerButtons() {
-        mTrueButton.setEnabled(false);
-        mFalseButton.setEnabled(false);
-        cheatButtonStatus(false);
+    private void answerButtonStatus(boolean status) {
+        mTrueButton.setEnabled(status);
+        mFalseButton.setEnabled(status);
+        cheatButtonActive(status);
     }
 
-    private void enableAnswerButtons() {
-        mTrueButton.setEnabled(true);
-        mFalseButton.setEnabled(true);
-        cheatButtonStatus(true);
-    }
-
-    private void cheatButtonStatus(boolean status) {
+    private void cheatButtonActive(boolean status) {
         mCheatButton.setEnabled(status);
     }
 
